@@ -18,7 +18,7 @@ library
                      , Numeric.Sized.WordOfSize
   build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
-  ghc-options:         -Wall -Werror
+  ghc-options:         -Wall
 
 test-suite nat-sized-numbers-test
   type:                exitcode-stdio-1.0
