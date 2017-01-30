@@ -107,7 +107,7 @@ instance KnownNat n =>
     finiteBitSize = fromInteger . natVal
 
 -- | Generate all values, in a sensible order
--- >>> allInts :: [IntOfSize 4]
+-- >>> allIntsOfSize :: [IntOfSize 4]
 -- [0,-1,1,-2,2,-3,3,-4,4,-5,5,-6,6,-7,7,-8]
 allIntsOfSize
     :: KnownNat n
