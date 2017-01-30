@@ -90,7 +90,6 @@ sameFncW f (_ :: Proxy n) =
 
 sameFncWNZRhs f n x y = y /= 0 ==> sameFncW f n x y
 
-
 sameFncAsS
     :: (Integral n, Integral m, Show n)
     => (forall a. Integral a =>
@@ -101,9 +100,10 @@ sameFncAsS
     -> n
     -> Either String String
 sameFncAsS f (_ :: Proxy n) (_ :: Proxy m) x y =
-    if (fromIntegral :: n -> m) (f x y) == (f `on` (fromIntegral :: n -> m)) x y
-    then Right ""
-    else Left (show x ++ " " ++ show y)
+    if (fromIntegral :: n -> m) (f x y) ==
+       (f `on` (fromIntegral :: n -> m)) x y
+        then Right ""
+        else Left (show x ++ " " ++ show y)
 
 sameFncWS
     :: (KnownNat n, Integral (WordType n))
@@ -146,8 +146,7 @@ sameFncINZRhsS
     -> Int n
     -> SmallCheck.Property m
 sameFncINZRhsS f n x y =
-    y /= 0 &&
-    (x /= minBound || y /= -1) SmallCheck.==> sameFncIS f n x y
+    y /= 0 && (x /= minBound || y /= -1) SmallCheck.==> sameFncIS f n x y
 
 testAll
     :: Testable a
