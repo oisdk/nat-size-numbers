@@ -3,6 +3,7 @@
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 
+-- | This module exports the 'IntOfSize' type and associated functions.
 module Numeric.Sized.IntOfSize
   (IntOfSize(..)
   ,allIntsOfSize)
@@ -18,7 +19,11 @@ import           GHC.TypeLits
 -- $setup
 -- >>> :set -XDataKinds
 
--- | A very small numeric type for exhaustiveness, with wraparound behavior
+-- | An integer type with a size decided by a type-level nat. Numeric operations
+-- wraparound by default:
+--
+-- >>> (127 :: IntOfSize 8) + 1
+-- -128
 newtype IntOfSize (n :: Nat) = IntOfSize
     { getIntOfSize :: Integer
     } deriving (Generic)
@@ -107,6 +112,7 @@ instance KnownNat n =>
     finiteBitSize = fromInteger . natVal
 
 -- | Generate all values, in a sensible order
+--
 -- >>> allIntsOfSize :: [IntOfSize 4]
 -- [0,-1,1,-2,2,-3,3,-4,4,-5,5,-6,6,-7,7,-8]
 allIntsOfSize

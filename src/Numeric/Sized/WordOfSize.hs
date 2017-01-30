@@ -3,6 +3,7 @@
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 
+-- | This module exports the 'WordOfSize' type and associated functions.
 module Numeric.Sized.WordOfSize
   (WordOfSize(..)
   ,allWordsOfSize)
@@ -16,7 +17,14 @@ import           GHC.Generics
 import           GHC.TypeLits
 import           Numeric.Natural
 
--- | A very small numeric type for exhaustiveness, with wraparound behavior
+-- $setup
+-- >>> :set -XDataKinds
+
+-- | An unsigned integer type with a size decided by a type-level nat. Numeric
+-- operations wraparound by default:
+--
+-- >>> (255 :: WordOfSize 8) + 1
+-- 0
 newtype WordOfSize (n :: Nat) = WordOfSize
     { getWordOfSize :: Natural
     } deriving (Generic)
@@ -106,6 +114,10 @@ instance KnownNat n =>
          FiniteBits (WordOfSize n) where
     finiteBitSize = fromInteger . natVal
 
+-- | Generates all words of a given size
+--
+-- >>> allWordOfSize :: [WordOfSize 3]
+-- [0,1,2,3,4,5,6,7]
 allWordsOfSize
     :: KnownNat n
     => [WordOfSize n]
