@@ -12,43 +12,42 @@ module Main
   where
 
 import           Data.Function
-import           Data.Int               hiding (Int)
+import           Data.Int
 import           Data.Proxy
-import           Data.Word              hiding (Word)
+import           Data.Word
 import           GHC.TypeLits
 import           Numeric.Natural
-import           Numeric.Sized.Int
-import           Numeric.Sized.Word
-import           Prelude                hiding (Int, Word)
+import           Numeric.Sized.IntOfSize
+import           Numeric.Sized.WordOfSize
 import           Test.DocTest
-import           Test.QuickCheck        hiding (generate)
-import qualified Test.SmallCheck        as SmallCheck
+import           Test.QuickCheck          hiding (generate)
+import qualified Test.SmallCheck          as SmallCheck
 import           Test.SmallCheck.Series
 
 instance KnownNat n =>
-         Arbitrary (Int n) where
+         Arbitrary (IntOfSize n) where
     arbitrary = arbitraryBoundedEnum
 
 instance KnownNat n =>
-         Arbitrary (Word n) where
+         Arbitrary (WordOfSize n) where
     arbitrary = arbitraryBoundedEnum
 
 instance (KnownNat n, Monad m) =>
-         Serial m (Int n) where
-    series = generate (`take` allInts)
+         Serial m (IntOfSize n) where
+    series = generate (`take` allIntsOfSize)
 
 instance (KnownNat n, Monad m) =>
-         Serial m (Word n) where
-    series = generate (`take` allWords)
+         Serial m (WordOfSize n) where
+    series = generate (`take` allWordsOfSize)
 
 type family IntType (n :: Nat) :: * where
-        IntType 8 = Int8
+        IntType 8  = Int8
         IntType 16 = Int16
         IntType 32 = Int32
         IntType 64 = Int64
 
 type family WordType (n :: Nat) :: * where
-        WordType 8 = Word8
+        WordType 8  = Word8
         WordType 16 = Word16
         WordType 32 = Word32
         WordType 64 = Word64
@@ -64,13 +63,13 @@ sameConvI
     :: (KnownNat n, Integral (IntType n))
     => Proxy n -> Integer -> Property
 sameConvI (_ :: Proxy n) =
-    sameConvAs (Proxy :: Proxy (Int n)) (Proxy :: Proxy (IntType n))
+    sameConvAs (Proxy :: Proxy (IntOfSize n)) (Proxy :: Proxy (IntType n))
 
 sameConvW
     :: (KnownNat n, Integral (WordType n))
     => Proxy n -> Natural -> Property
 sameConvW (_ :: Proxy n) =
-    sameConvAs (Proxy :: Proxy (Word n)) (Proxy :: Proxy (WordType n))
+    sameConvAs (Proxy :: Proxy (WordOfSize n)) (Proxy :: Proxy (WordType n))
 
 sameFncAs
     :: (Integral n, Integral m, Integral i, Show i)
@@ -94,7 +93,7 @@ sameFncI, sameFncINZRhs
     -> Integer
     -> Property
 sameFncI f (_ :: Proxy n) =
-    sameFncAs f (Proxy :: Proxy (Int n)) (Proxy :: Proxy (IntType n))
+    sameFncAs f (Proxy :: Proxy (IntOfSize n)) (Proxy :: Proxy (IntType n))
 
 sameFncINZRhs f n x y = y /= 0 ==> sameFncI f n x y
 
@@ -107,7 +106,7 @@ sameFncW, sameFncWNZRhs
     -> Natural
     -> Property
 sameFncW f (_ :: Proxy n) =
-    sameFncAs f (Proxy :: Proxy (Word n)) (Proxy :: Proxy (WordType n))
+    sameFncAs f (Proxy :: Proxy (WordOfSize n)) (Proxy :: Proxy (WordType n))
 
 sameFncWNZRhs f n x y = y /= 0 ==> sameFncW f n x y
 
@@ -131,19 +130,19 @@ sameFncWS
     => (forall a. Integral a =>
                   a -> a -> a)
     -> Proxy n
-    -> Word n
-    -> Word n
+    -> WordOfSize n
+    -> WordOfSize n
     -> Either String String
 sameFncWS f (_ :: Proxy n) =
-    sameFncAsS f (Proxy :: Proxy (Word n)) (Proxy :: Proxy (WordType n))
+    sameFncAsS f (Proxy :: Proxy (WordOfSize n)) (Proxy :: Proxy (WordType n))
 
 sameFncWNZRhsS
     :: (KnownNat n, Integral (WordType n), Monad m)
     => (forall a. Integral a =>
                   a -> a -> a)
     -> Proxy n
-    -> Word n
-    -> Word n
+    -> WordOfSize n
+    -> WordOfSize n
     -> SmallCheck.Property m
 sameFncWNZRhsS f n x y = y /= 0 SmallCheck.==> sameFncWS f n x y
 
@@ -152,19 +151,19 @@ sameFncIS
     => (forall a. Integral a =>
                   a -> a -> a)
     -> Proxy n
-    -> Int n
-    -> Int n
+    -> IntOfSize n
+    -> IntOfSize n
     -> Either String String
 sameFncIS f (_ :: Proxy n) =
-    sameFncAsS f (Proxy :: Proxy (Int n)) (Proxy :: Proxy (IntType n))
+    sameFncAsS f (Proxy :: Proxy (IntOfSize n)) (Proxy :: Proxy (IntType n))
 
 sameFncINZRhsS
-    :: (KnownNat n, Integral (IntType n), Monad m, Bounded (Int n))
+    :: (KnownNat n, Integral (IntType n), Monad m, Bounded (IntOfSize n))
     => (forall a. Integral a =>
                   a -> a -> a)
     -> Proxy n
-    -> Int n
-    -> Int n
+    -> IntOfSize n
+    -> IntOfSize n
     -> SmallCheck.Property m
 sameFncINZRhsS f n x y =
     y /= 0 && (x /= minBound || y /= -1) SmallCheck.==> sameFncIS f n x y

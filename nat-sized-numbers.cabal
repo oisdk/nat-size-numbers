@@ -1,7 +1,7 @@
 name:                nat-sized-numbers
 version:             0.1.0.0
-synopsis:            Initial project template from stack
-description:         Please see README.md
+synopsis:            Variable-sized numbers from type-level nats.
+description:         Variable-sized numbers from type-level nats.
 homepage:            https://github.com/oisdk/nat-sized-numbers#readme
 license:             MIT
 license-file:        LICENSE
@@ -14,8 +14,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Numeric.Sized.Int
-                     , Numeric.Sized.Word
+  exposed-modules:     Numeric.Sized.IntOfSize
+                     , Numeric.Sized.WordOfSize
   build-depends:       base >= 4.7 && < 5
   default-language:    Haskell2010
   ghc-options:         -Wall -Werror
