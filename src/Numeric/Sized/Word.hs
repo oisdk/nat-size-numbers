@@ -1,9 +1,9 @@
 {-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE DeriveGeneric         #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
-{-# LANGUAGE DeriveGeneric         #-}
 
 module Numeric.Sized.Word (Word(..)) where
 
@@ -11,6 +11,7 @@ import           Data.Bits
 import           Data.Coerce
 import           Data.Function
 import           Data.Proxy
+import           GHC.Generics
 import           GHC.TypeLits
 import           Numeric.Natural
 import           Prelude                hiding (Word)

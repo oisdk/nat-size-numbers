@@ -1,6 +1,9 @@
-{-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE KindSignatures      #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE DeriveGeneric         #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE KindSignatures        #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 
 module Numeric.Sized.Int (Int(..)) where
 
@@ -8,13 +11,15 @@ import           Data.Bits
 import           Data.Coerce
 import           Data.Function
 import           Data.Proxy
+import           GHC.Generics
 import           GHC.TypeLits
-import           Prelude       hiding (Int)
+import           Prelude                hiding (Int)
 import qualified Prelude
-import           Test.QuickCheck (Arbitrary(..), arbitraryBoundedEnum)
+import           Test.QuickCheck        (Arbitrary (..), arbitraryBoundedEnum)
+import           Test.SmallCheck.Series
 
 -- | A very small numeric type for exhaustiveness, with wraparound behavior
-newtype Int  (n :: Nat) = Int  { getInt  :: Integer }
+newtype Int  (n :: Nat) = Int  { getInt  :: Integer } deriving Generic
 
 instance KnownNat n => Bounded (Int n) where
   minBound = Int (shift (-1) (fromInteger (natVal (Proxy :: Proxy n) - 1)))
@@ -87,3 +92,12 @@ instance KnownNat n => FiniteBits (Int n) where
 
 instance KnownNat n => Arbitrary (Int n) where
   arbitrary = arbitraryBoundedEnum
+
+instance (KnownNat n, Monad m) => Serial m (Int n) where
+  series = generate (`take` vals) where
+    vals = c [0, -1 .. minBound] [1..maxBound] where
+      c (x:xs) ys = x : c ys xs
+      c [] ys = ys
+
+instance KnownNat n => Show (Int n) where
+  showsPrec n = showsPrec n . getInt . trunc
