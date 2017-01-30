@@ -1,12 +1,11 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE DeriveGeneric         #-}
-{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 
 module Numeric.Sized.Word
-  (Word(..))
+  (Word(..)
+  ,allWords)
   where
 
 import           Data.Bits
@@ -17,8 +16,6 @@ import           GHC.Generics
 import           GHC.TypeLits
 import           Numeric.Natural
 import           Prelude                hiding (Word)
-import           Test.QuickCheck        (Arbitrary (..), arbitraryBoundedEnum)
-import           Test.SmallCheck.Series
 
 -- | A very small numeric type for exhaustiveness, with wraparound behavior
 newtype Word (n :: Nat) = Word
@@ -110,10 +107,7 @@ instance KnownNat n =>
          FiniteBits (Word n) where
     finiteBitSize = fromInteger . natVal
 
-instance KnownNat n =>
-         Arbitrary (Word n) where
-    arbitrary = arbitraryBoundedEnum
-
-instance (Monad m, KnownNat n) =>
-         Serial m (Word n) where
-    series = generate (`take` [minBound .. maxBound])
+allWords
+    :: KnownNat n
+    => [Word n]
+allWords = [minBound .. maxBound]

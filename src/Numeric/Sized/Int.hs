@@ -1,12 +1,11 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE DeriveGeneric         #-}
-{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
 
 module Numeric.Sized.Int
-  (Int(..))
+  (Int(..)
+  ,allInts)
   where
 
 import           Data.Bits
@@ -17,8 +16,9 @@ import           GHC.Generics
 import           GHC.TypeLits
 import           Prelude                hiding (Int)
 import qualified Prelude
-import           Test.QuickCheck        (Arbitrary (..), arbitraryBoundedEnum)
-import           Test.SmallCheck.Series
+
+-- $setup
+-- >>> :set -XDataKinds
 
 -- | A very small numeric type for exhaustiveness, with wraparound behavior
 newtype Int (n :: Nat) = Int
@@ -108,18 +108,16 @@ instance KnownNat n =>
          FiniteBits (Int n) where
     finiteBitSize = fromInteger . natVal
 
-instance KnownNat n =>
-         Arbitrary (Int n) where
-    arbitrary = arbitraryBoundedEnum
-
-instance (KnownNat n, Monad m) =>
-         Serial m (Int n) where
-    series = generate (`take` vals)
-      where
-        vals = c [0,-1 .. minBound] [1 .. maxBound]
-          where
-            c (x:xs) ys = x : c ys xs
-            c [] ys     = ys
+-- | Generate all values, in a sensible order
+-- >>> allInts :: [Int 4]
+-- [0,-1,1,-2,2,-3,3,-4,4,-5,5,-6,6,-7,7,-8]
+allInts
+    :: KnownNat n
+    => [Int n]
+allInts = f [0 .. maxBound ] (drop 1 [0,-1 .. minBound])
+  where
+    f (x:xs) ys = x : f ys xs
+    f [] ys = ys
 
 instance KnownNat n =>
          Show (Int n) where

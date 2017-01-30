@@ -1,24 +1,45 @@
-{-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE RankNTypes          #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeFamilies        #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Main
   (main)
   where
 
 import           Data.Function
-import           Data.Int           hiding (Int)
+import           Data.Int               hiding (Int)
 import           Data.Proxy
-import           Data.Word          hiding (Word)
+import           Data.Word              hiding (Word)
 import           GHC.TypeLits
 import           Numeric.Natural
 import           Numeric.Sized.Int
 import           Numeric.Sized.Word
-import           Prelude            hiding (Int, Word)
-import           Test.QuickCheck
-import qualified Test.SmallCheck    as SmallCheck
+import           Prelude                hiding (Int, Word)
+import           Test.DocTest
+import           Test.QuickCheck        hiding (generate)
+import qualified Test.SmallCheck        as SmallCheck
+import           Test.SmallCheck.Series
+
+instance KnownNat n =>
+         Arbitrary (Int n) where
+    arbitrary = arbitraryBoundedEnum
+
+instance KnownNat n =>
+         Arbitrary (Word n) where
+    arbitrary = arbitraryBoundedEnum
+
+instance (KnownNat n, Monad m) =>
+         Serial m (Int n) where
+    series = generate (`take` allInts)
+
+instance (KnownNat n, Monad m) =>
+         Serial m (Word n) where
+    series = generate (`take` allWords)
 
 type family IntType (n :: Nat) :: * where
         IntType 8 = Int8
@@ -191,3 +212,4 @@ main = do
     SmallCheck.smallCheck 100000 (sameFncINZRhsS rem (Proxy :: Proxy 8))
     SmallCheck.smallCheck 100000 (sameFncWNZRhsS quot (Proxy :: Proxy 8))
     SmallCheck.smallCheck 100000 (sameFncINZRhsS quot (Proxy :: Proxy 8))
+    doctest ["-isrc", "src/"]
