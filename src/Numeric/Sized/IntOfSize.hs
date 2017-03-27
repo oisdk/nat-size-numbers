@@ -1,7 +1,8 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE DeriveGeneric         #-}
-{-# LANGUAGE KindSignatures        #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE KindSignatures             #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 
 -- | This module exports the 'IntOfSize' type and associated functions.
 module Numeric.Sized.IntOfSize
@@ -15,6 +16,7 @@ import           Data.Function
 import           Data.Proxy
 import           GHC.Generics
 import           GHC.TypeLits
+import           Data.Ix
 
 -- $setup
 -- >>> :set -XDataKinds
@@ -26,7 +28,7 @@ import           GHC.TypeLits
 -- -128
 newtype IntOfSize (n :: Nat) = IntOfSize
     { getIntOfSize :: Integer
-    } deriving (Generic)
+    } deriving (Generic, Ix)
 
 instance KnownNat n =>
          Bounded (IntOfSize n) where
@@ -121,7 +123,7 @@ allIntsOfSize
 allIntsOfSize = f [0 .. maxBound ] (drop 1 [0,-1 .. minBound])
   where
     f (x:xs) ys = x : f ys xs
-    f [] ys = ys
+    f [] ys     = ys
 
 instance KnownNat n =>
          Show (IntOfSize n) where

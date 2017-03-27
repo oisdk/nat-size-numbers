@@ -1,7 +1,8 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE DeriveGeneric         #-}
-{-# LANGUAGE KindSignatures        #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveGeneric              #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE KindSignatures             #-}
+{-# LANGUAGE ScopedTypeVariables        #-}
 
 -- | This module exports the 'WordOfSize' type and associated functions.
 module Numeric.Sized.WordOfSize
@@ -12,6 +13,7 @@ module Numeric.Sized.WordOfSize
 import           Data.Bits
 import           Data.Coerce
 import           Data.Function
+import           Data.Ix
 import           Data.Proxy
 import           GHC.Generics
 import           GHC.TypeLits
@@ -27,7 +29,7 @@ import           Numeric.Natural
 -- 0
 newtype WordOfSize (n :: Nat) = WordOfSize
     { getWordOfSize :: Natural
-    } deriving (Generic)
+    } deriving (Generic, Ix)
 
 instance KnownNat n =>
          Bounded (WordOfSize n) where
